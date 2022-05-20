@@ -1,0 +1,47 @@
+name: ci-cd
+on: [push]
+jobs:
+  App-setup:
+    runs-on: ubuntu-latest
+   
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+      
+      - name: Install dependencies
+        run: npm install
+
+      - name: use cache 
+        uses: actions/cache@v2
+        with:
+          path: "./*"
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+variables:
+  CODE_DEPLOY_APPLICATION_NAME: "kush-app"
+  CODE_DEPLOY_DEPLOYMENT_GROUP: "kush-group"
+  S3_BUCKET: "kush-bucket"
+  APP_BUNDLE_S3_KEY: "acebook.zip"           
+
+deploy:
+  stage: deploy
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+  script:
+     # Creates a ZIP file containing all the files (except hidden files) in the current directory and uploads it to S3 in the format CodeDeploy expects.
+     - > 
+        aws deploy push
+        --application-name $CODE_DEPLOY_APPLICATION_NAME
+        --ignore-hidden-files
+        --s3-location s3://$S3_BUCKET/$APP_BUNDLE_S3_KEY
+        --source .
+     # Tells CodeDeploy to deploy the application that was just uploaded to S3.
+     - >
+        aws deploy create-deployment
+        --application-name $CODE_DEPLOY_APPLICATION_NAME
+        --s3-location bucket=$S3_BUCKET,key=$APP_BUNDLE_S3_KEY,bundleType=zip
+        --deployment-group-name $CODE_DEPLOY_DEPLOYMENT_GROUP
+        --file-exists-behavior OVERWRITE
