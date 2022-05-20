@@ -33,13 +33,9 @@ jobs:
             role-to-assume: arn:aws:iam::134491901103:role/GitHubActionsRole
             aws-region: eu-west-2
 
-        - name: Deploy to S3
+        - name: Copy files to the website with the AWS CLI
           run:
-          aws deploy push
-          --application-name kush-app
-          --ignore-hidden-files
-          --s3-location s3://kush-bucket/acebook.zip
-          --source .
+            aws s3 sync . s3://kush-bucket
 
         - name: AWS Create Deployment
           run:
