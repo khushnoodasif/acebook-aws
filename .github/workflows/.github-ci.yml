@@ -1,24 +1,75 @@
 name: ci-cd
 on: [push]
 jobs:
-  app-setup:
-    runs-on: ubuntu-latest
+  # setup-environment:
+  #   runs-on: ubuntu-latest
    
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Use Node.js
-        uses: actions/setup-node@v2
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v2
       
-      - name: Install dependencies
-        run: npm install
+  #     - name: Install dependencies
+  #       run: npm install
 
-      - name: use cache 
-        uses: actions/cache@v2
-        with:
-          path: "./*"
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}          
+  #     - name: use cache 
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: "./*"
+  #         key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+  # lint-run:
+  #   needs: setup-environment
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: use cache 
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: "./*"
+  #         key: ${{ github.sha }}
+
+  #     - name: Start MongoDB
+  #       uses: supercharge/mongodb-github-action@1.7.0
+
+  #     - name: Lint run
+  #       run: npm run lint
+
+  # jest-run:
+  #   needs: setup-environment
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: use cache 
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: "./*"
+  #         key: ${{ github.sha }}
+
+  #     - name: Start MongoDB
+  #       uses: supercharge/mongodb-github-action@1.7.0
+
+  #     - name: Jest run
+  #       run: npm run test:unit
+
+  # cypress-run:
+  #   needs: setup-environment
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: use cache 
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: "./*"
+  #         key: ${{ github.sha }}
+
+  #     - name: Start MongoDB
+  #       uses: supercharge/mongodb-github-action@1.7.0
+
+  #     - name: Cypress run
+  #       uses: cypress-io/github-action@v2
+  #       with:
+  #         start: npm run start:test
+  #         wait-on: http://localhost:3030    
 
   deploy:
     runs-on: ubuntu-latest
