@@ -1,6 +1,6 @@
 {
   "name": "acebook",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Template for the AceBook project",
   "license": "CC BY-NC-SA",
   "private": true,
@@ -14,7 +14,7 @@
     "test:integration": "cypress run"
   },
   "engines": {
-    "node": ">=12.14.1"
+    "node": ">=16.15.0"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
