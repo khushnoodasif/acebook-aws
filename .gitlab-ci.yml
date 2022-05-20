@@ -68,6 +68,7 @@ test_integration:
     - npm run test:integration
 
 deploy:
+
   stage: deploy
   # This image is provided by GitLab and contains the latest version of the AWS CLI.
   # Other images can be used too (e.g. `amazon/aws-cli` is another popular choice)

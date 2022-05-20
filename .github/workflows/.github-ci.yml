@@ -1,7 +1,7 @@
 name: ci-cd
 on: [push]
 jobs:
-  App-setup:
+  app-setup:
     runs-on: ubuntu-latest
    
     steps:
@@ -27,6 +27,8 @@ variables:
   APP_BUNDLE_S3_KEY: "acebook.zip"           
 
 deploy:
+  runs-on: ubuntu-latest
+  needs: [app-setup]
   stage: deploy
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
