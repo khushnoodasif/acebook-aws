@@ -1,0 +1,92 @@
+# The commands specified for each of the jobs in this file will run inside this Docker container
+# unless a different, job-specific image is specified.
+# Here, we've chosen an image that has Node 12.14.1 installed,
+# which is the version of Node required by our application.
+image: node:12.14.1
+
+stages:
+  - test
+  - deploy
+
+# Q: What do you think this section is for? How does it work?
+#
+# Answer: This section can be used to configure additional Docker containers that GitLab CI/CD should run alongside the container used for each job.
+# This can be useful for cases where your application needs access to an external service such as a database
+# in order to be tested properly.
+# In this case, we are using an image that can be starta MongoDB database.
+# For more on Services, see https://docs.gitlab.com/ee/ci/services/.
+services: 
+  - name: mongo:4.2
+
+# Q: And what about this section? How does what we define in here relate to the other sections?
+#
+# Answer: This section is used to specify environment variables.
+# These will be available across all jobs and your application can read them.
+variables:
+  # We set the MONGODB_URL variable here because our application expects this variable to be set so that it can connect to the database.
+  # In this case, we want to connect to the container that runs our database and that's defined in the `services` section above.
+  # Note that the hostname is `mongo`, not `localhost`.
+  # The reason why is explained in the GitLab docs: https://docs.gitlab.com/ee/ci/services/#how-services-are-linked-to-the-job
+  MONGODB_URL: "mongodb://mongo/acebook_test"
+
+  # These environment variables are used in the deploy job and are just here to make our script more DRY and readable.
+  CODE_DEPLOY_APPLICATION_NAME: "placeholder-app-name"
+  CODE_DEPLOY_DEPLOYMENT_GROUP: "placeholder-deployment-group"
+  S3_BUCKET: "placeholder-bucket-name"
+  APP_BUNDLE_S3_KEY: "placeholder.zip" 
+
+
+test_unit:
+  stage: test
+  script:
+    # Dependencies have to be installed first.
+    - npm install 
+    # Run linting
+    - npm run lint
+    # Run unit tests.
+    - npm run test:unit
+
+test_integration:
+  # Q: What is the effect of specifying an image here?
+  #
+  # Answer: This overrides the default image specified at the top of the file.
+  # For this job only, GitLab will use the image specfified below instead of the Node image defined above.
+  # This image is an image with Node 12.14.1 and Cypress installed.
+  # See more info on this image here: https://docs.cypress.io/examples/examples/docker
+  image: cypress/base:12.14.1
+  stage: test
+  script:
+    # Dependencies have to be installed first. By default, they are not carried over from the previous job!
+    - npm install
+    # Q: What is the effect of the ampersand? Why do we need it?
+    #
+    # Answer: It makes the `npm run start:ci` command run in the background.
+    # If we didn't add it, this command would hang forever (try it on your local to see the difference)
+    # and your CI script would never move on to the next step.
+    - npm run start:ci &
+    # Run Cypress integration tests.
+    - npm run test:integration
+
+deploy:
+  stage: deploy
+  # This image is provided by GitLab and contains the latest version of the AWS CLI.
+  # Other images can be used too (e.g. `amazon/aws-cli` is another popular choice)
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  script:
+     # Creates a ZIP file containing all the files (except hidden files) in the current directory and uploads it to S3 in the format CodeDeploy expects.
+     - > 
+        aws deploy push
+        --application-name $CODE_DEPLOY_APPLICATION_NAME
+        --ignore-hidden-files
+        --s3-location s3://$S3_BUCKET/$APP_BUNDLE_S3_KEY
+        --source .
+     # Tells CodeDeploy to deploy the application that was just uploaded to S3.
+     - >
+        aws deploy create-deployment
+        --application-name $CODE_DEPLOY_APPLICATION_NAME
+        --s3-location bucket=$S3_BUCKET,key=$APP_BUNDLE_S3_KEY,bundleType=zip
+        --deployment-group-name $CODE_DEPLOY_DEPLOYMENT_GROUP
+        --file-exists-behavior OVERWRITE
+ 
+
+
