@@ -34,7 +34,7 @@ jobs:
             aws-region: eu-west-2
 
         - name: Deploy to S3
-          run: |
+          run:
           aws deploy push
           --application-name kush-app
           --ignore-hidden-files
@@ -42,7 +42,7 @@ jobs:
           --source .
 
         - name: AWS Create Deployment
-          run: |
+          run:
           aws deploy create-deployment
           --application-name kush-app
           --s3-location bucket=kush-bucket,key=acebook.zip,bundleType=zip
