@@ -10,6 +10,11 @@ source /home/ec2-user/.bash_profile
 # This path is chosen by us and defined in the appspec.yml file.
 cd /var/acebook
 
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+. ~/.nvm/nvm.sh
+nvm install node 16
+
+nvm install v10.13.0
 # Starts the server.
 # The `> /dev/null 2> /dev/null < /dev/null &` bit is needed to start the process in the background.
 # For an explanation of why it needs to be started in the background,
