@@ -32,6 +32,9 @@ deploy:
   stage: deploy
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::134491901103:role/GitHubActionsRole
+          aws-region: eu-west-2
   script:
      # Creates a ZIP file containing all the files (except hidden files) in the current directory and uploads it to S3 in the format CodeDeploy expects.
      - > 
