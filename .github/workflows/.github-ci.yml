@@ -39,8 +39,8 @@ jobs:
 
         - name: AWS Create Deployment
           run:
-          aws deploy create-deployment
-          --application-name kush-app
-          --s3-location bucket=kush-bucket,key=acebook.zip,bundleType=zip
-          --deployment-group-name kush-group
-          --file-exists-behavior OVERWRITE
+            aws deploy create-deployment
+            --application-name kush-app
+            --s3-location bucket=kush-bucket,key=acebook.zip,bundleType=zip
+            --deployment-group-name kush-group
+            --file-exists-behavior OVERWRITE
