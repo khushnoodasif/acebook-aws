@@ -5,9 +5,9 @@
 # See https://stackoverflow.com/a/34066708.
 source /home/ec2-user/.bash_profile
 
-# curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
-# . ~/.nvm/nvm.sh
-# nvm install node
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+. ~/.nvm/nvm.sh
+nvm install node 16
 
 nvm install v10.13.0
 # Goes to the directory to which CodeDeploy has copied our application files
