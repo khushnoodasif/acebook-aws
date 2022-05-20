@@ -29,7 +29,15 @@ variables:
 deploy:
   runs-on: ubuntu-latest
   needs: [app-setup]
-  stage: deploy
+
+  permissions:
+  id-token: write
+  contents: read
+
+  steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
