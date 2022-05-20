@@ -33,16 +33,17 @@ jobs:
           with:
             role-to-assume: arn:aws:iam::134491901103:role/GitHubActionsRole
             aws-region: eu-west-2
-    script:
-      # Creates a ZIP file containing all the files (except hidden files) in the current directory and uploads it to S3 in the format CodeDeploy expects.
-      - > 
+
+        - name: Deploy to S3
+          run: |
           aws deploy push
           --application-name kush-app
           --ignore-hidden-files
           --s3-location s3://kush-bucket/acebook.zip
           --source .
-      # Tells CodeDeploy to deploy the application that was just uploaded to S3.
-      - >
+          
+        - name: AWS Create Deployment
+          run: |
           aws deploy create-deployment
           --application-name kush-app
           --s3-location bucket=kush-bucket,key=acebook.zip,bundleType=zip
